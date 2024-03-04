@@ -19,6 +19,12 @@ inserted in the initial get of `/`, or a message indicating failure. To see it s
 
 and follow the buttons starting from http://localhost:4000/ again to the end.
 
+## UPDATE!
+
+The issue I was having, where an inbound request would cause the cookie to not be read until
+manually triggering a load, was due to the default setting of the `SameSite` cookie policy to
+"strict". Setting it to "lax" fixes the problem. See https://web.dev/articles/samesite-cookies-explained
+
 # Why is it called "princess"?
 
 Because it's the baby version of [Queenie](https://git.kittenclause.com/nebkor/queen), a small
