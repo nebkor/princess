@@ -60,17 +60,17 @@ pub async fn post_slash(session: Session) -> impl IntoResponse {
 
 pub async fn success(session: Session) -> impl IntoResponse {
     session.load().await.unwrap();
-    let user = if let Some(user) = session.get::<TestData>(&SIGNUP_KEY).await.unwrap_or(None) {
-        user
+    let td = if let Some(td) = session.get::<TestData>(&SIGNUP_KEY).await.unwrap_or(None) {
+        td
     } else {
         TestData::default()
     };
-    let user = if user == TestData::default() {
+    let td = if td == TestData::default() {
         "Default TestData, session fetch failed.".to_string()
     } else {
-        format!("Successful fetch from session: {user:?}")
+        format!("Successful fetch from session: {td:?}")
     };
-    let html: Html<_> = format!("<p>Check out this test data:</p><pre>{user:?}</pre>").into();
+    let html: Html<_> = format!("<p>Check out this test data:</p><pre>{td}</pre>").into();
     html.into_response()
 }
 
