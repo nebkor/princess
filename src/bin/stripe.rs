@@ -12,7 +12,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(get_slash).post(post_slash))
         .into_make_service();
-    let addr = SocketAddr::from(([127, 0, 0, 1], 4001));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 4001));
     let listener = TcpListener::bind(&addr).await.unwrap();
 
     axum::serve(listener, app).await.unwrap();

@@ -6,10 +6,18 @@ data upon initial return from Stripe, but if you manually enter the URL, it work
 
 # How to run
 
-First, run `cargo run --bin=stripe &`; this will start the "Stripe" service listening on
-localhost:4001. Then, run `cargo run --bin=princess` and visit http://localhost:4000/ and click the
+In order to demonstrate the issue, the "stripe" service must be run on a different origin than the
+"princess" service. The following will set that up:
+
+`cargo run --bin=stripe & cargo run --bin=princess -- http://$(hostname):4001/`
+
+Now visit http://localhost:4000/ and click the
 buttons. At the end, you'll end up at a page at http://localhost:4000/success and see the test data
-inserted in the initial get of `/`.
+inserted in the initial get of `/`, or a message indicating failure. To see it succeed, run:
+
+`cargo run --bin=stripe & cargo run --bin=princess`
+
+and follow the buttons starting from http://localhost:4000/ again to the end.
 
 # Why is it called "princess"?
 

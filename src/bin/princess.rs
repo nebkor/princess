@@ -51,18 +51,24 @@ pub async fn post_slash(session: Session) -> impl IntoResponse {
     session.insert(&SIGNUP_KEY, user).await.unwrap();
     session.save().await.unwrap();
 
-    Redirect::to("http://localhost:4001/").into_response()
+    let mut args = std::env::args();
+    args.next();
+    let stripe = args.next().unwrap_or("http://localhost:4001/".into());
+
+    Redirect::to(&stripe).into_response()
 }
 
 pub async fn success(session: Session) -> impl IntoResponse {
     session.load().await.unwrap();
-    dbg!("loaded the session");
     let user = if let Some(user) = session.get::<TestData>(&SIGNUP_KEY).await.unwrap_or(None) {
-        dbg!("loaded test data");
         user
     } else {
-        dbg!("could not load data from session");
         TestData::default()
+    };
+    let user = if user == TestData::default() {
+        "Default TestData, session fetch failed.".to_string()
+    } else {
+        format!("Successful fetch from session: {user:?}")
     };
     let html: Html<_> = format!("<p>Check out this test data:</p><pre>{user:?}</pre>").into();
     html.into_response()
