@@ -24,8 +24,8 @@ async fn main() {
         .with_expiry(Expiry::OnInactivity(time::Duration::hours(2)));
 
     let app = Router::new()
-        .route("/signup", get(get_signup).post(post_signup))
-        .route("/payment_success/:receipt", get(payment_success))
+        .route("/", get(get_slash).post(post_slash))
+        .route("/success", get(success))
         .layer(session_layer)
         .into_make_service();
     let addr = SocketAddr::from(([127, 0, 0, 1], 4000));
@@ -34,15 +34,15 @@ async fn main() {
     axum::serve(listener, app).await.unwrap();
 }
 
-pub async fn get_signup() -> impl IntoResponse {
+pub async fn get_slash() -> impl IntoResponse {
     let html: Html<&str> =
-        "<p><form action='/signup' enctype='application/x-www-form-urlencoded' method='post'>
-    <input type='submit' value='Signup'></form></p>"
+        "<p>Welcome to Princess</p><p><form action='/' enctype='application/x-www-form-urlencoded' method='post'>
+    <input type='submit' value='go to stripe'></form></p>"
             .into();
     html.into_response()
 }
 
-pub async fn post_signup(session: Session) -> impl IntoResponse {
+pub async fn post_slash(session: Session) -> impl IntoResponse {
     let user = TestData {
         name: "yo yo".to_string(),
         ..Default::default()
@@ -51,10 +51,10 @@ pub async fn post_signup(session: Session) -> impl IntoResponse {
     session.insert(&SIGNUP_KEY, user).await.unwrap();
     session.save().await.unwrap();
 
-    Redirect::to("http://localhost:4001").into_response()
+    Redirect::to("http://localhost:4001/").into_response()
 }
 
-pub async fn payment_success(session: Session) -> impl IntoResponse {
+pub async fn success(session: Session) -> impl IntoResponse {
     session.load().await.unwrap();
     dbg!("loaded the session");
     let user = if let Some(user) = session.get::<TestData>(&SIGNUP_KEY).await.unwrap_or(None) {
